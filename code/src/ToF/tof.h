@@ -14,7 +14,8 @@ class tof
 private:
     uint32_t scl;
     uint32_t sda;
-
+    void I2C_HW_Write(uint8_t Addr, uint8_t Reg, uint8_t Value);
+    
 public:
     tof(uint32_t scl, uint32_t sda);
     void init();
