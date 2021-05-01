@@ -12,7 +12,7 @@ private:
 
 public:
     iic(I2C_TypeDef *iic);
-    void init(bool Remap = false);
+    void init(bool Remap);
 
 };
 

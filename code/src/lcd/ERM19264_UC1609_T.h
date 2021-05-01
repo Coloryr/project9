@@ -94,7 +94,7 @@
 #define UC1609_RST_SetLow digitalWrite(_LCD_RST, LOW)
 
 // SPI
-#define SPI_FREQ 8000000 // Mhz (1000000 can be used on high freq MCU)
+#define SPI_FREQ 1000000 // Mhz (1000000 can be used on high freq MCU)
 #define SPI_DIRECTION MSBFIRST
 #define SPI_UC1609_MODE SPI_MODE0
 #define SPI_UC1609_CLOCK_DIV SPI_CLOCK_DIV8 //STM32 uses this
@@ -118,7 +118,7 @@ public:
     void LCDGotoXY(uint8_t column, uint8_t page);
     void LCDChar(unsigned char character);
     void LCDString(const unsigned char *characters);
-    void LCDbegin(uint8_t VbiasPot = UC1609_DEFAULT_GN_PM);
+    void LCDbegin();
     void LCDinit(void);
     void LCDEnable(uint8_t on);
     void LCDFillScreen(uint8_t pixel, uint8_t mircodelay);
@@ -133,6 +133,7 @@ public:
 private:
     void send_data(uint8_t data);
     void send_command(uint8_t command, uint8_t value);
+    void send_command(uint8_t command);
     bool isHardwareSPI(void);
     void CustomshiftOut(uint8_t bitOrder, uint8_t val);
 
@@ -141,7 +142,6 @@ private:
     int8_t _LCD_RST;
     int8_t _LCD_SCLK;  // Software SPI only
     int8_t _LCD_DIN;   // Software SPI only
-    uint8_t _VbiasPOT; // Contrast default 0x49 datasheet 00-FE
 };
 
 #endif

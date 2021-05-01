@@ -33,14 +33,12 @@ ERM19264_UC1609_T ::ERM19264_UC1609_T(int8_t cd, int8_t rst, int8_t cs, int8_t s
 
 // Desc: begin Method initialise LCD
 // Sets pinmodes and SPI setup
-// Param1: VBiasPOT default = 0x49 , range 0x00 to 0xFE
-void ERM19264_UC1609_T::LCDbegin(uint8_t VbiasPOT)
+void ERM19264_UC1609_T::LCDbegin()
 {
   pinMode(_LCD_CD, OUTPUT);
   pinMode(_LCD_RST, OUTPUT);
   pinMode(_LCD_CS, OUTPUT);
 
-  _VbiasPOT = VbiasPOT;
   if (isHardwareSPI())
   {
     SPI.begin();
@@ -76,18 +74,27 @@ void ERM19264_UC1609_T::LCDinit()
 
   UC1609_CS_SetLow;
 
-  send_command(UC1609_TEMP_COMP_REG, UC1609_TEMP_COMP_SET);
-  send_command(UC1609_ADDRESS_CONTROL, UC1609_ADDRESS_SET);
-  send_command(UC1609_FRAMERATE_REG, UC1609_FRAMERATE_SET);
-  send_command(UC1609_BIAS_RATIO, UC1609_BIAS_RATIO_SET);
-  send_command(UC1609_POWER_CONTROL, UC1609_PC_SET);
-  delay(UC1609_INIT_DELAY);
+  // send_command(UC1609_TEMP_COMP_REG, UC1609_TEMP_COMP_SET);
+  // send_command(UC1609_ADDRESS_CONTROL, UC1609_ADDRESS_SET);
+  // send_command(UC1609_FRAMERATE_REG, UC1609_FRAMERATE_SET);
+  // send_command(UC1609_BIAS_RATIO, UC1609_BIAS_RATIO_SET);
+  // send_command(UC1609_POWER_CONTROL, UC1609_PC_SET);
+  // delay(UC1609_INIT_DELAY);
 
-  send_command(UC1609_GN_PM, 0);
-  send_command(UC1609_GN_PM, _VbiasPOT); //  changed by user
+  // send_command(UC1609_GN_PM, 0);
+  // send_command(UC1609_GN_PM, _VbiasPOT); //  changed by user
 
-  send_command(UC1609_DISPLAY_ON, 0x01);                    // turn on display
-  send_command(UC1609_LCD_CONTROL, UC1609_ROTATION_NORMAL); // rotate to normal
+  // send_command(UC1609_DISPLAY_ON, 0x01);                    // turn on display
+  // send_command(UC1609_LCD_CONTROL, UC1609_ROTATION_NORMAL); // rotate to normal
+
+  send_command(0xe2);	//显示屏复位指令
+	send_command(0xa3);//设置帧速率[A0: 76fps, A1b: 95fps, A2b: 132fps, A3b: 168fps(fps: frame-per-second)]
+	send_command(0xeb);	//设置LCD偏置比(亮度设置)
+	send_command(0x2f);	//显示屏功耗设置
+	send_command(0xc2);	//设置LCD映射控制
+	send_command(0x81);	//设置SEG偏置电压(对比度) 双字节指令
+	send_command(180);	//设置SEG偏置电压(对比度) 双字节指令
+	send_command(0xaf);	//开启显示指令
 
   UC1609_CS_SetHigh;
 }
@@ -99,6 +106,13 @@ void ERM19264_UC1609_T::send_command(uint8_t command, uint8_t value)
 {
   UC1609_CD_SetLow;
   send_data(command | value);
+  UC1609_CD_SetHigh;
+}
+
+void ERM19264_UC1609_T::send_command(uint8_t command)
+{
+  UC1609_CD_SetLow;
+  send_data(command);
   UC1609_CD_SetHigh;
 }
 

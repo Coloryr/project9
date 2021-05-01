@@ -3,9 +3,15 @@
 
 #include <Arduino.h>
 
-#define Enable PA3  // GPIO pin number pick any you want
-#define Step PA4 // GPIO pin number pick any you want
-#define Dir PA5  // GPIO pin number pick any you want
+#define DRV_Enable PB0
+#define DRV_Step PB8
+#define DRV_Dir PB9
+#define DRV_Res PB4
+#define DRV_Sleep PB5
+
+#define DRV_M0 PB1
+#define DRV_M1 PB2
+#define DRV_M2 PB3
 
 class DRV8825
 {
