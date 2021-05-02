@@ -1,6 +1,8 @@
 #include "Input.h"
 #include "cmsis_os.h"
 
+Input *io;
+
 Input::Input()
 {
     HAL_GPIO_WritePin(GPIOC, LL_GPIO_PIN_0, GPIO_PIN_SET);

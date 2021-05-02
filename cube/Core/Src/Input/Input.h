@@ -36,4 +36,6 @@ public:
     KEY get();
 };
 
+extern class Input *io;
+
 #endif

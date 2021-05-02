@@ -1,6 +1,8 @@
 #include "main.h"
 #include "LCD.h"
 
+LCD *mylcd;
+
 unsigned char string1[] = "Distance  :";
 unsigned char string2[] = "Now Pos:";
 unsigned char string3[] = "gyro:      ,     ,     ";

@@ -12,4 +12,6 @@ public:
     void initShow();
 };
 
+extern class LCD *mylcd;
+
 #endif

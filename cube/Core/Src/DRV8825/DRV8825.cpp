@@ -1,5 +1,7 @@
 #include "DRV8825.h"
 
+DRV8825 *drv;
+
 DRV8825::DRV8825()
 {
     HAL_GPIO_WritePin(GPIOB, DRV_Enable, GPIO_PIN_RESET);

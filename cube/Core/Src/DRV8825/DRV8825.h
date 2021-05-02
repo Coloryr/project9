@@ -23,4 +23,6 @@ public:
     void set(bool dir);
 };
 
+extern class DRV8825 *drv;
+
 #endif
