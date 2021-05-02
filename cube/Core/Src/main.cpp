@@ -1,7 +1,8 @@
 #include "main.h"
-#include "init.h"
+#include "Init/init.h"
 #include "cmsis_os.h"
 #include "DRV8825/DRV8825.h"
+#include "LCD/LCD.h"
 #include "Input/Input.h"
 
 osThreadId_t defaultTaskHandle;
@@ -15,6 +16,7 @@ void StartDefaultTask(void *argument);
 
 DRV8825 *drv;
 Input *io;
+LCD *mylcd;
 
 int main(void)
 {
@@ -29,9 +31,6 @@ int main(void)
     MX_I2C2_Init();
     MX_SPI1_Init();
 
-    drv = new DRV8825();
-    io = new Input();
-
     osKernelInitialize();
 
     defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
@@ -45,6 +44,10 @@ int main(void)
 
 void StartDefaultTask(void *argument)
 {
+    drv = new DRV8825();
+    io = new Input();
+    mylcd = new LCD();
+    mylcd->initShow();
     for (;;)
     {
         osDelay(1);
