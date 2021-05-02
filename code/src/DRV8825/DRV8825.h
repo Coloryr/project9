@@ -19,6 +19,8 @@ private:
 public:
     DRV8825();
     void run();
+    void runFast();
+    void set(bool dir);
 };
 
 #endif

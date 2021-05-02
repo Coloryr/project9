@@ -3,6 +3,7 @@
 
 unsigned char string1[] = "Distance  :";
 unsigned char string2[] = "Now Pos:";
+unsigned char string3[] = "gyro:      ,     ,     ";
 
 lcd::lcd()
 {
@@ -25,4 +26,6 @@ void lcd::initShow()
     hlcd->LCDChar('2');
     hlcd->LCDGotoXY(0, 2);
     hlcd->LCDString(string2);
+    hlcd->LCDGotoXY(0, 3);
+    hlcd->LCDString(string3);
 }

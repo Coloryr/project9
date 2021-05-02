@@ -3,15 +3,14 @@
 
 #include <Arduino.h>
 
-class YX6549
+class YX65491
 {
 private:
-    int YPR[3];
-    int32_t gyro[3] = {0};
-    unsigned char Re_buf[30];
 
 public:
-    YX6549();
+    YX65491();
+    int YPR[3];
+    int32_t gyro[3] = {0};
     void init();
     void read();
 };
