@@ -5,17 +5,17 @@ Input *io;
 
 Input::Input()
 {
-    HAL_GPIO_WritePin(GPIOC, LL_GPIO_PIN_0, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(GPIOC, LL_GPIO_PIN_1, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(GPIOC, LL_GPIO_PIN_2, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(GPIOC, LL_GPIO_PIN_3, GPIO_PIN_SET);
+	LL_GPIO_SetOutputPin(GPIOC, LL_GPIO_PIN_0);
+    LL_GPIO_SetOutputPin(GPIOC, LL_GPIO_PIN_1);
+    LL_GPIO_SetOutputPin(GPIOC, LL_GPIO_PIN_2);
+    LL_GPIO_SetOutputPin(GPIOC, LL_GPIO_PIN_3);
 }
 
 void Input::scan()
 {
-    HAL_GPIO_WritePin(GPIOC, LL_GPIO_PIN_0, GPIO_PIN_RESET);
+	LL_GPIO_ResetOutputPin(GPIOC, LL_GPIO_PIN_0);
     osDelay(10);
-    if (HAL_GPIO_ReadPin(GPIOC, LL_GPIO_PIN_4) == GPIO_PIN_RESET)
+    if (LL_GPIO_IsInputPinSet(GPIOC, LL_GPIO_PIN_4) == 0)
     {
         if (now == KEY_1)
         {
@@ -26,7 +26,7 @@ void Input::scan()
             now = KEY_1;
         }
     }
-    else if (HAL_GPIO_ReadPin(GPIOC, LL_GPIO_PIN_5) == GPIO_PIN_RESET)
+    else if (LL_GPIO_IsInputPinSet(GPIOC, LL_GPIO_PIN_5) == 0)
     {
         if (now == KEY_4)
         {
@@ -37,7 +37,7 @@ void Input::scan()
             now = KEY_4;
         }
     }
-    else if (HAL_GPIO_ReadPin(GPIOC, LL_GPIO_PIN_6) == GPIO_PIN_RESET)
+    else if (LL_GPIO_IsInputPinSet(GPIOC, LL_GPIO_PIN_6) == 0)
     {
         if (now == KEY_7)
         {
@@ -48,7 +48,7 @@ void Input::scan()
             now = KEY_7;
         }
     }
-    else if (HAL_GPIO_ReadPin(GPIOC, LL_GPIO_PIN_7) == GPIO_PIN_RESET)
+    else if (LL_GPIO_IsInputPinSet(GPIOC, LL_GPIO_PIN_7) == 0)
     {
         if (now == KEY_N)
         {
@@ -59,10 +59,10 @@ void Input::scan()
             now = KEY_N;
         }
     }
-    HAL_GPIO_WritePin(GPIOC, LL_GPIO_PIN_0, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(GPIOC, LL_GPIO_PIN_1, GPIO_PIN_RESET);
+    LL_GPIO_SetOutputPin(GPIOC, LL_GPIO_PIN_0);
+    LL_GPIO_ResetOutputPin(GPIOC, LL_GPIO_PIN_1);
     osDelay(10);
-    if (HAL_GPIO_ReadPin(GPIOC, LL_GPIO_PIN_4) == GPIO_PIN_RESET)
+    if (LL_GPIO_IsInputPinSet(GPIOC, LL_GPIO_PIN_4) == 0)
     {
         if (now == KEY_2)
         {
@@ -73,7 +73,7 @@ void Input::scan()
             now = KEY_2;
         }
     }
-    else if (HAL_GPIO_ReadPin(GPIOC, LL_GPIO_PIN_5) == GPIO_PIN_RESET)
+    else if (LL_GPIO_IsInputPinSet(GPIOC, LL_GPIO_PIN_5) == 0)
     {
         if (now == KEY_5)
         {
@@ -84,7 +84,7 @@ void Input::scan()
             now = KEY_5;
         }
     }
-    else if (HAL_GPIO_ReadPin(GPIOC, LL_GPIO_PIN_6) == GPIO_PIN_RESET)
+    else if (LL_GPIO_IsInputPinSet(GPIOC, LL_GPIO_PIN_6) == 0)
     {
         if (now == KEY_8)
         {
@@ -95,7 +95,7 @@ void Input::scan()
             now = KEY_8;
         }
     }
-    else if (HAL_GPIO_ReadPin(GPIOC, LL_GPIO_PIN_7) == GPIO_PIN_RESET)
+    else if (LL_GPIO_IsInputPinSet(GPIOC, LL_GPIO_PIN_7) == 0)
     {
         if (now == KEY_0)
         {
@@ -106,10 +106,10 @@ void Input::scan()
             now = KEY_0;
         }
     }
-    HAL_GPIO_WritePin(GPIOC, LL_GPIO_PIN_1, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(GPIOC, LL_GPIO_PIN_2, GPIO_PIN_RESET);
+    LL_GPIO_SetOutputPin(GPIOC, LL_GPIO_PIN_1);
+    LL_GPIO_ResetOutputPin(GPIOC, LL_GPIO_PIN_2);
     osDelay(10);
-    if (HAL_GPIO_ReadPin(GPIOC, LL_GPIO_PIN_4) == GPIO_PIN_RESET)
+    if (LL_GPIO_IsInputPinSet(GPIOC, LL_GPIO_PIN_4) == 0)
     {
         if (now == KEY_3)
         {
@@ -120,7 +120,7 @@ void Input::scan()
             now = KEY_3;
         }
     }
-    else if (HAL_GPIO_ReadPin(GPIOC, LL_GPIO_PIN_5) == GPIO_PIN_RESET)
+    else if (LL_GPIO_IsInputPinSet(GPIOC, LL_GPIO_PIN_5) == 0)
     {
         if (now == KEY_6)
         {
@@ -131,7 +131,7 @@ void Input::scan()
             now = KEY_6;
         }
     }
-    else if (HAL_GPIO_ReadPin(GPIOC, LL_GPIO_PIN_6) == GPIO_PIN_RESET)
+    else if (LL_GPIO_IsInputPinSet(GPIOC, LL_GPIO_PIN_6) == 0)
     {
         if (now == KEY_9)
         {
@@ -142,7 +142,7 @@ void Input::scan()
             now = KEY_9;
         }
     }
-    else if (HAL_GPIO_ReadPin(GPIOC, LL_GPIO_PIN_7) == GPIO_PIN_RESET)
+    else if (LL_GPIO_IsInputPinSet(GPIOC, LL_GPIO_PIN_7) == 0)
     {
         if (now == KEY_M)
         {
@@ -153,10 +153,10 @@ void Input::scan()
             now = KEY_M;
         }
     }
-    HAL_GPIO_WritePin(GPIOC, LL_GPIO_PIN_2, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(GPIOC, LL_GPIO_PIN_3, GPIO_PIN_RESET);
+    LL_GPIO_SetOutputPin(GPIOC, LL_GPIO_PIN_2);
+    LL_GPIO_ResetOutputPin(GPIOC, LL_GPIO_PIN_3);
     osDelay(10);
-    if (HAL_GPIO_ReadPin(GPIOC, LL_GPIO_PIN_4) == GPIO_PIN_RESET)
+    if (LL_GPIO_IsInputPinSet(GPIOC, LL_GPIO_PIN_4) == 0)
     {
         if (now == KEY_A)
         {
@@ -167,7 +167,7 @@ void Input::scan()
             now = KEY_A;
         }
     }
-    else if (HAL_GPIO_ReadPin(GPIOC, LL_GPIO_PIN_5) == GPIO_PIN_RESET)
+    else if (LL_GPIO_IsInputPinSet(GPIOC, LL_GPIO_PIN_5) == 0)
     {
         if (now == KEY_B)
         {
@@ -178,7 +178,7 @@ void Input::scan()
             now = KEY_B;
         }
     }
-    else if (HAL_GPIO_ReadPin(GPIOC, LL_GPIO_PIN_6) == GPIO_PIN_RESET)
+    else if (LL_GPIO_IsInputPinSet(GPIOC, LL_GPIO_PIN_6) == 0)
     {
         if (now == KEY_C)
         {
@@ -189,7 +189,7 @@ void Input::scan()
             now = KEY_C;
         }
     }
-    else if (HAL_GPIO_ReadPin(GPIOC, LL_GPIO_PIN_7) == GPIO_PIN_RESET)
+    else if (LL_GPIO_IsInputPinSet(GPIOC, LL_GPIO_PIN_7) == 0)
     {
         if (now == KEY_D)
         {
@@ -200,7 +200,7 @@ void Input::scan()
             now = KEY_D;
         }
     }
-    HAL_GPIO_WritePin(GPIOC, LL_GPIO_PIN_3, GPIO_PIN_SET);
+    LL_GPIO_SetOutputPin(GPIOC, LL_GPIO_PIN_3);
 }
 
 KEY Input::get()

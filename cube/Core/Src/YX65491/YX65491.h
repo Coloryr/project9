@@ -12,10 +12,10 @@ private:
 
 public:
     YX65491();
-    int YPR[3];
-    int32_t gyro[3] = {0};
+    uint16_t gyro;
     void init();
     void read();
+    void reset();
 };
 
 extern class YX65491 *xyz;

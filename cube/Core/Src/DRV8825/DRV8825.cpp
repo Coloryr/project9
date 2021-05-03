@@ -4,30 +4,37 @@ DRV8825 *drv;
 
 DRV8825::DRV8825()
 {
-    HAL_GPIO_WritePin(GPIOB, DRV_Enable, GPIO_PIN_RESET);
+    LL_GPIO_ResetOutputPin(GPIOB, DRV_Enable);
 
-    HAL_GPIO_WritePin(GPIOB, DRV_Sleep, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(GPIOB, DRV_Res, GPIO_PIN_SET);
+    LL_GPIO_SetOutputPin(GPIOB, DRV_Sleep);
+    LL_GPIO_SetOutputPin(GPIOB, DRV_Res);
 
-    HAL_GPIO_WritePin(GPIOB, DRV_M0, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(GPIOB, DRV_M1, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(GPIOB, DRV_M2, GPIO_PIN_RESET);
+    LL_GPIO_SetOutputPin(GPIOB, DRV_M0);
+    LL_GPIO_ResetOutputPin(GPIOB, DRV_M1);
+    LL_GPIO_SetOutputPin(GPIOB, DRV_M2);
 }
 
 void DRV8825::set(bool dir)
 {
-    HAL_GPIO_WritePin(GPIOB, DRV_Dir, dir ? GPIO_PIN_SET : GPIO_PIN_RESET);
+    if (dir)
+    {
+        LL_GPIO_SetOutputPin(GPIOB, DRV_Dir);
+    }
+    else
+    {
+        LL_GPIO_ResetOutputPin(GPIOB, DRV_Dir);
+    }
 }
 
 void DRV8825::run()
 {
-    HAL_GPIO_WritePin(GPIOB, DRV_Step, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(GPIOB, DRV_Step, GPIO_PIN_RESET);
+    LL_GPIO_SetOutputPin(GPIOB, DRV_Step);
+    LL_GPIO_ResetOutputPin(GPIOB, DRV_Step);
 }
 
 void DRV8825::runFast()
 {
-    HAL_GPIO_WritePin(GPIOB, DRV_M0, GPIO_PIN_RESET);
+    LL_GPIO_ResetOutputPin(GPIOB, DRV_M2);
     run();
-    HAL_GPIO_WritePin(GPIOB, DRV_M0, GPIO_PIN_SET);
+    LL_GPIO_SetOutputPin(GPIOB, DRV_M2);
 }
