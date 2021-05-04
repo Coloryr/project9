@@ -171,10 +171,8 @@ void TaskShow(void *data)
         now = xyz->gyro;
 
         bool nag = now < 0;
-
         short data_2 = nag ? abs(now) + 1 : now;
 
-        data_2 = nag ? abs(need) + 1 : need;
         data_1[0] = data_2 / 1 % 10;
         data_1[1] = data_2 / 10 % 10;
         data_1[2] = data_2 / 100 % 10;
