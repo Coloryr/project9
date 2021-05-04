@@ -12,7 +12,7 @@ private:
 
 public:
     YX65491();
-    uint16_t gyro;
+    short gyro;
     void init();
     void read();
     void reset();

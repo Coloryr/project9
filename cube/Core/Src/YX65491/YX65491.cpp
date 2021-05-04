@@ -57,7 +57,11 @@ void YX65491::read()
         LL_USART_ClearFlag_IDLE(USART2);
         if (Usart2_RxBuff[0] == 0x5A && Usart2_RxBuff[1] == 0x5A)
         {
-            gyro = (Usart2_RxBuff[4] << 8 | Usart2_RxBuff[5]) / 100;
+            gyro = Usart2_RxBuff[4] << 8 | Usart2_RxBuff[5];
+            // if (gyro > 180)
+            // {
+            //     gyro = -(180 - (xyz->gyro - 475));
+            // }
         }
     }
 }

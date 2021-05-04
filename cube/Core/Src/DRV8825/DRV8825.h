@@ -16,11 +16,13 @@
 class DRV8825
 {
 private:
+    bool _dir;
 public:
     DRV8825();
     void run();
     void runFast();
     void set(bool dir);
+    void turn();
 };
 
 extern class DRV8825 *drv;

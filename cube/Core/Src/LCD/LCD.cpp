@@ -5,7 +5,8 @@ LCD *mylcd;
 
 unsigned char string1[] = "Distance  :";
 unsigned char string2[] = "Now Pos:";
-unsigned char string3[] = "gyro:      ,     ,     ";
+unsigned char string3[] = "gyro:";
+unsigned char string4[] = "set:";
 
 LCD::LCD()
 {
@@ -30,4 +31,6 @@ void LCD::initShow()
     hlcd->LCDString(string2);
     hlcd->LCDGotoXY(0, 3);
     hlcd->LCDString(string3);
+    hlcd->LCDGotoXY(0, 6);
+    hlcd->LCDString(string4);
 }
