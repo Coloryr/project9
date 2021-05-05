@@ -83,6 +83,7 @@ tof::tof(I2C_TypeDef *iic)
 	LL_RCC_GetSystemClocksFreq(&rcc_clocks);
 	LL_I2C_ConfigSpeed(I2C1, rcc_clocks.PCLK1_Frequency, 100000, LL_I2C_DUTYCYCLE_2);
 	LL_I2C_Enable(I2C1);
+	dis = 0;
 }
 
 void tof::read()

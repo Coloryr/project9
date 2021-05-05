@@ -7,6 +7,7 @@
 #include "YX65491/YX65491.h"
 #include "ToF/tof.h"
 #include <math.h>
+#include "PID/pid.h"
 
 const osThreadAttr_t task_input = {
     .name = "input",
@@ -23,13 +24,12 @@ const osThreadAttr_t task_show = {
 void TaskShow(void *data);
 void TaskInput(void *data);
 
-bool balance = false;
-short now_set = 0;
+char now_set = 0;
 short need = 18000;
 short now = 0;
 short now_dis = 0;
 bool edit;
-uint8_t set_temp[5] = {0x0F, 0x0F, 0x0F, 0x0F, 0x0F};
+uint8_t set_temp[2] = {0x0F, 0x0F};
 bool set_nag = false;
 uint8_t set_pos = 0;
 unsigned char setfail[] = "set fail";
@@ -65,16 +65,26 @@ void TaskShow(void *data)
     {
         KEY temp = io->get();
         uint16_t temp1 = tof_1->get();
-        uint8_t a, b, c;
-        a = temp1 / 100;
-        b = temp1 / 10 % 10;
-        c = temp1 % 10;
+        now_dis = ((temp1 / 10) - 30);
+        data_1[0] = temp1 / 100;
+        data_1[1] = temp1 / 10 % 10;
+        data_1[2] = temp1 % 10;
         mylcd->hlcd->LCDGotoXY(90, 0);
-        mylcd->hlcd->LCDChar(a + 0x30);
-        mylcd->hlcd->LCDChar(b + 0x30);
-        mylcd->hlcd->LCDChar(c + 0x30);
-        mylcd->hlcd->LCDGotoXY(0, 4);
-        mylcd->hlcd->LCDChar(temp + 0x30);
+        mylcd->hlcd->LCDChar(data_1[0] + 0x30);
+        mylcd->hlcd->LCDChar(data_1[1] + 0x30);
+        mylcd->hlcd->LCDChar(data_1[2] + 0x30);
+        mylcd->hlcd->LCDGotoXY(90, 2);
+
+        bool nag = now_dis < 0;
+        short data_2 = nag ? abs(now_dis) + 1 : now_dis;
+
+        if (nag)
+            mylcd->hlcd->LCDChar('-');
+        else
+            mylcd->hlcd->LCDChar(' ');
+        mylcd->hlcd->LCDChar((data_2 / 10 % 10) + 0x30);
+        mylcd->hlcd->LCDChar((data_2 % 10) + 0x30);
+
         if (temp == KEY_A)
         {
             drv->run();
@@ -87,20 +97,19 @@ void TaskShow(void *data)
         {
             xyz->reset();
         }
-        // else if (temp == KEY_D)
-        // {
-        //     balance = true;
-        // }
         else if (temp == KEY_N)
         {
             edit = true;
             set_pos = 0;
+            set_nag = false;
+            set_temp[0] = set_temp[1] = 0xF;
             mylcd->hlcd->LCDGotoXY(100, 6);
             mylcd->hlcd->LCDChar('<');
         }
         else if (temp == KEY_M)
         {
-            set_nag = !set_nag;
+            if (edit)
+                set_nag = !set_nag;
         }
         else if (edit)
         {
@@ -146,32 +155,29 @@ void TaskShow(void *data)
             }
         }
 
-        if (set_pos == 5)
+        if (set_pos == 2)
         {
             edit = false;
             mylcd->hlcd->LCDGotoXY(100, 6);
             mylcd->hlcd->LCDChar(' ');
-            int set_ = set_temp[0] * 10000 + set_temp[1] * 1000 + set_temp[2] * 100 + set_temp[3] * 10 + set_temp[4];
+            char set_ = set_temp[0] * 10 + set_temp[1];
             mylcd->hlcd->LCDGotoXY(0, 7);
-            if (set_ > 18000)
+            if (set_ > 25)
             {
                 mylcd->hlcd->LCDString(setfail);
             }
             else
             {
-                need = set_nag ? -set_ : set_;
+                now_set = set_nag ? -set_ : set_;
                 mylcd->hlcd->LCDString(setdone);
             }
-            set_pos = 0;
-            set_nag = false;
-            set_temp[0] = set_temp[1] = set_temp[2] = set_temp[3] = set_temp[4] = 0xF;
         }
 
         xyz->read();
         now = xyz->gyro;
 
-        bool nag = now < 0;
-        short data_2 = nag ? abs(now) + 1 : now;
+        nag = now < 0;
+        data_2 = nag ? abs(now) + 1 : now;
 
         data_1[0] = data_2 / 1 % 10;
         data_1[1] = data_2 / 10 % 10;
@@ -193,6 +199,8 @@ void TaskShow(void *data)
 
         if (!edit)
         {
+            need = balance(now_dis, now_set);
+
             nag = need < 0;
             data_2 = nag ? abs(need) + 1 : need;
             data_1[0] = data_2 / 1 % 10;
@@ -201,7 +209,7 @@ void TaskShow(void *data)
             data_1[3] = data_2 / 1000 % 10;
             data_1[4] = data_2 / 10000;
 
-            mylcd->hlcd->LCDGotoXY(40, 6);
+            mylcd->hlcd->LCDGotoXY(130, 3);
 
             if (nag)
                 mylcd->hlcd->LCDChar('-');
@@ -247,6 +255,18 @@ void TaskShow(void *data)
                     drv->run();
                 }
             }
+            mylcd->hlcd->LCDGotoXY(40, 6);
+
+            nag = now_set < 0;
+            if (nag)
+                mylcd->hlcd->LCDChar('-');
+            else
+                mylcd->hlcd->LCDChar(' ');
+            data_1[1] = now_set % 10;
+            data_1[0] = now_set / 10 % 10;
+
+            mylcd->hlcd->LCDChar(data_1[0] + 0x30);
+            mylcd->hlcd->LCDChar(data_1[1] + 0x30);
         }
         else
         {
@@ -258,10 +278,6 @@ void TaskShow(void *data)
                 mylcd->hlcd->LCDChar(' ');
             mylcd->hlcd->LCDChar(set_temp[0] + 0x30);
             mylcd->hlcd->LCDChar(set_temp[1] + 0x30);
-            mylcd->hlcd->LCDChar(set_temp[2] + 0x30);
-            mylcd->hlcd->LCDChar('.');
-            mylcd->hlcd->LCDChar(set_temp[3] + 0x30);
-            mylcd->hlcd->LCDChar(set_temp[4] + 0x30);
         }
 
         osDelay(100);

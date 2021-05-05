@@ -5,7 +5,7 @@ LCD *mylcd;
 
 unsigned char string1[] = "Distance  :";
 unsigned char string2[] = "Now Pos:";
-unsigned char string3[] = "gyro:";
+unsigned char string3[] = "gyro:        need:";
 unsigned char string4[] = "set:";
 
 LCD::LCD()
