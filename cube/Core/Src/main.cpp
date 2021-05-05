@@ -200,6 +200,14 @@ void TaskShow(void *data)
         if (!edit)
         {
             need = balance(now_dis, now_set);
+            if(need > 0)
+            {
+            	need = 18000 - need * 10;
+            }
+            else
+            {
+            	need = - 18000 - need * 10;
+            }
 
             nag = need < 0;
             data_2 = nag ? abs(need) + 1 : need;
