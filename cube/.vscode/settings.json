@@ -2,6 +2,8 @@
     "files.associations": {
         "main.h": "c",
         "init.h": "c",
-        "limits": "cpp"
+        "limits": "cpp",
+        "stm32f1xx_ll_gpio.h": "c",
+        "stm32f1xx_ll_pwr.h": "c"
     }
 }
