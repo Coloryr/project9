@@ -1,9 +1,9 @@
 #include "main.h"
 
-#define FSYNC LL_GPIO_PIN_6
+#define FSYNC LL_GPIO_PIN_12
 
-#define FSYNC_SetHigh LL_GPIO_SetOutputPin(GPIOA, FSYNC);
-#define FSYNC_SetLOW LL_GPIO_ResetOutputPin(GPIOA, FSYNC);
+#define FSYNC_SetHigh LL_GPIO_SetOutputPin(GPIOB, FSYNC);
+#define FSYNC_SetLOW LL_GPIO_ResetOutputPin(GPIOB, FSYNC);
 
 #define AD9833_REG_CMD		(0 << 14)
 #define AD9833_REG_FREQ0	(1 << 14)
@@ -42,6 +42,7 @@ public:
     AD9833();
     void AD9833_SetRegisterValue(uint16_t regValue);
     void AD9833_SetFrequency(uint16_t reg, float fout);
+    void AD9833_SetFrequencyOnly(float fout);
     void AD9833_SetFrequencyQuick(float fout, uint16_t type);
     void AD9833_Init();
     void AD9833_Setup(uint16_t freq, uint16_t phase, uint16_t type);

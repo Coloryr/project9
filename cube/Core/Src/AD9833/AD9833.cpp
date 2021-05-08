@@ -1,22 +1,28 @@
 #include "AD9833.h"
 
-#define FCLK 30000000 //设置晶振频率
+#define FCLK 25000000 //设置晶振频率
 //#define RealFreDat    268435456.0/FCLK//总的公式为 Fout=（Fclk/2的28次方）*28位寄存器的值
 double RealFreDat = 268435456.0 / FCLK;
-
-
 AD9833 *dds;
 
 AD9833::AD9833()
 {
+    LL_SPI_Enable(SPI2);
     FSYNC_SetHigh
 }
 void AD9833::AD9833_SPI_Write(uint8_t *data, uint8_t size)
 {
-    FSYNC_SetLOW
-	for (uint8_t i = 0; i < size; i++)
+    FSYNC_SetLOW unsigned char i = 0;
+    unsigned char writeData[5] = {0, 0, 0, 0, 0};
+    for (i = 0; i < size; i++)
     {
-        LL_SPI_TransmitData8(SPI2, data[i]);
+        writeData[i] = data[i + 1];
+    }
+    for (i = 0; i < size; i++)
+    {
+        LL_SPI_TransmitData8(SPI2, writeData[i]);
+        while (!LL_SPI_IsActiveFlag_TXE(SPI2))
+            ;
     }
     FSYNC_SetHigh
 }
@@ -47,6 +53,12 @@ void AD9833::AD9833_SetFrequencyQuick(float fout, uint16_t type)
     AD9833_SetFrequency(AD9833_REG_FREQ0, fout * 1000); // 400 kHz
     AD9833_Setup(AD9833_FSEL0, AD9833_PSEL0, type);
 }
+
+void AD9833::AD9833_SetFrequencyOnly(float fout)
+{
+    AD9833_SetFrequency(AD9833_REG_FREQ0, fout * 1000); // 400 kHz
+}
+
 void AD9833::AD9833_Init()
 {
     AD9833_SetRegisterValue(AD9833_REG_CMD | AD9833_RESET);

@@ -3,9 +3,10 @@
 
 LCD *mylcd;
 
-uint8_t string1[] = "Output frequency:";
-uint8_t string2[] = "Input resistance:";
-uint8_t string3[] = "Output resistance";
+uint8_t string1[] = "Output frequency:       KHz";
+uint8_t string2[] = "Input resistance:       Ko";
+uint8_t string3[] = "Output resistance:      Ko";
+uint8_t string4[] = "Output:off";
 
 LCD::LCD()
 {
@@ -24,4 +25,6 @@ void LCD::initShow()
     hlcd->LCDString(string2);
     hlcd->LCDGotoXY(0, 2);
     hlcd->LCDString(string3);
+    hlcd->LCDGotoXY(0, 3);
+    hlcd->LCDString(string4);
 }

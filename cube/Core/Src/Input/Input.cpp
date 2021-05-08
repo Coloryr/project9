@@ -5,7 +5,7 @@ Input *io;
 
 Input::Input()
 {
-	LL_GPIO_SetOutputPin(GPIOC, LL_GPIO_PIN_0);
+    LL_GPIO_SetOutputPin(GPIOC, LL_GPIO_PIN_0);
     LL_GPIO_SetOutputPin(GPIOC, LL_GPIO_PIN_1);
     LL_GPIO_SetOutputPin(GPIOC, LL_GPIO_PIN_2);
     LL_GPIO_SetOutputPin(GPIOC, LL_GPIO_PIN_3);
@@ -13,13 +13,14 @@ Input::Input()
 
 void Input::scan()
 {
-	LL_GPIO_ResetOutputPin(GPIOC, LL_GPIO_PIN_0);
+    LL_GPIO_ResetOutputPin(GPIOC, LL_GPIO_PIN_0);
     osDelay(10);
+    KEY temp = KEY_NULL;
     if (LL_GPIO_IsInputPinSet(GPIOC, LL_GPIO_PIN_4) == 0)
     {
         if (now == KEY_1)
         {
-            out = KEY_1;
+            temp = KEY_1;
         }
         else
         {
@@ -30,7 +31,7 @@ void Input::scan()
     {
         if (now == KEY_4)
         {
-            out = KEY_4;
+            temp = KEY_4;
         }
         else
         {
@@ -41,7 +42,7 @@ void Input::scan()
     {
         if (now == KEY_7)
         {
-            out = KEY_7;
+            temp = KEY_7;
         }
         else
         {
@@ -52,7 +53,7 @@ void Input::scan()
     {
         if (now == KEY_N)
         {
-            out = KEY_N;
+            temp = KEY_N;
         }
         else
         {
@@ -66,7 +67,7 @@ void Input::scan()
     {
         if (now == KEY_2)
         {
-            out = KEY_2;
+            temp = KEY_2;
         }
         else
         {
@@ -77,7 +78,7 @@ void Input::scan()
     {
         if (now == KEY_5)
         {
-            out = KEY_5;
+            temp = KEY_5;
         }
         else
         {
@@ -88,7 +89,7 @@ void Input::scan()
     {
         if (now == KEY_8)
         {
-            out = KEY_8;
+            temp = KEY_8;
         }
         else
         {
@@ -99,7 +100,7 @@ void Input::scan()
     {
         if (now == KEY_0)
         {
-            out = KEY_0;
+            temp = KEY_0;
         }
         else
         {
@@ -113,7 +114,7 @@ void Input::scan()
     {
         if (now == KEY_3)
         {
-            out = KEY_3;
+            temp = KEY_3;
         }
         else
         {
@@ -124,7 +125,7 @@ void Input::scan()
     {
         if (now == KEY_6)
         {
-            out = KEY_6;
+            temp = KEY_6;
         }
         else
         {
@@ -135,7 +136,7 @@ void Input::scan()
     {
         if (now == KEY_9)
         {
-            out = KEY_9;
+            temp = KEY_9;
         }
         else
         {
@@ -144,14 +145,8 @@ void Input::scan()
     }
     else if (LL_GPIO_IsInputPinSet(GPIOC, LL_GPIO_PIN_7) == 0)
     {
-        if (now == KEY_M)
-        {
-            out = KEY_M;
-        }
-        else
-        {
+            temp = KEY_M;
             now = KEY_M;
-        }
     }
     LL_GPIO_SetOutputPin(GPIOC, LL_GPIO_PIN_2);
     LL_GPIO_ResetOutputPin(GPIOC, LL_GPIO_PIN_3);
@@ -160,7 +155,7 @@ void Input::scan()
     {
         if (now == KEY_A)
         {
-            out = KEY_A;
+            temp = KEY_A;
         }
         else
         {
@@ -169,38 +164,29 @@ void Input::scan()
     }
     else if (LL_GPIO_IsInputPinSet(GPIOC, LL_GPIO_PIN_5) == 0)
     {
-        if (now == KEY_B)
-        {
-            out = KEY_B;
-        }
-        else
-        {
+            temp = KEY_B;
             now = KEY_B;
-        }
     }
     else if (LL_GPIO_IsInputPinSet(GPIOC, LL_GPIO_PIN_6) == 0)
     {
-        if (now == KEY_C)
-        {
-            out = KEY_C;
-        }
-        else
-        {
+            temp = KEY_C;
             now = KEY_C;
-        }
     }
     else if (LL_GPIO_IsInputPinSet(GPIOC, LL_GPIO_PIN_7) == 0)
     {
-        if (now == KEY_D)
-        {
-            out = KEY_D;
-        }
-        else
-        {
+            temp = KEY_D;
             now = KEY_D;
-        }
     }
     LL_GPIO_SetOutputPin(GPIOC, LL_GPIO_PIN_3);
+
+    if (temp == KEY_NULL)
+    {
+        if (now != KEY_NULL)
+        {
+            out = now;
+            now = KEY_NULL;
+        }
+    }
 }
 
 KEY Input::get()

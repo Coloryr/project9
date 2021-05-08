@@ -21,12 +21,15 @@ const osThreadAttr_t task_input = {
 void TaskInput(void *argument);
 void TaskShow(void *data);
 
-uint32_t now_set = 0;
-bool edit;
+uint32_t now_set = 1;
+bool edit = false;
+bool out = false;
 uint8_t set_temp[5] = {0x0F, 0x0F, 0x0F, 0x0F, 0x0F};
 uint8_t set_pos = 0;
-unsigned char setfail[] = "set fail";
-unsigned char setdone[] = "set done";
+uint8_t setfail[] = "set fail";
+uint8_t setdone[] = "set done";
+uint8_t on[] = "on ";
+uint8_t off[] = "off";
 
 uint16_t AD_DMA[2048];
 
@@ -73,8 +76,23 @@ void TaskShow(void *data)
       edit = true;
       set_pos = 0;
       set_temp[0] = set_temp[1] = set_temp[2] = set_temp[3] = set_temp[4] = 0xF;
-      mylcd->hlcd->LCDGotoXY(200, 0);
-      mylcd->hlcd->LCDChar('<');
+      mylcd->hlcd->LCDGotoXY(120, 0);
+      mylcd->hlcd->LCDChar('>');
+    }
+    else if (temp == KEY_M)
+    {
+      if (!out)
+      {
+        out = true;
+        mylcd->hlcd->LCDGotoXY(50, 3);
+        mylcd->hlcd->LCDString(on);
+      }
+      else
+      {
+        out = false;
+        mylcd->hlcd->LCDGotoXY(50, 3);
+        mylcd->hlcd->LCDString(off);
+      }
     }
     else if (edit)
     {
@@ -120,22 +138,23 @@ void TaskShow(void *data)
       }
     }
 
-    if (set_pos == 2)
+    if (set_pos == 5)
     {
       edit = false;
-      mylcd->hlcd->LCDGotoXY(100, 6);
+      mylcd->hlcd->LCDGotoXY(120, 0);
       mylcd->hlcd->LCDChar(' ');
       uint32_t set_ = set_temp[0] * 10000 + set_temp[1] * 1000 + set_temp[2] * 100 + set_temp[3] * 10 + set_temp[4] * 1;
       mylcd->hlcd->LCDGotoXY(0, 7);
-      if (set_ > 5000)
+      if (set_ > 50000)
       {
         mylcd->hlcd->LCDString(setfail);
       }
       else
       {
         now_set = set_;
-        dds->AD9833_SetFrequencyQuick(now_set, AD9833_OUT_SINUS);
         mylcd->hlcd->LCDString(setdone);
+        if (out)
+          dds->AD9833_SetFrequencyQuick(now_set, AD9833_OUT_SINUS);
       }
     }
 
@@ -148,7 +167,6 @@ void TaskShow(void *data)
       data_1[4] = now_set / 10000;
 
       mylcd->hlcd->LCDGotoXY(130, 0);
-
       mylcd->hlcd->LCDChar(data_1[4] + 0x30);
       mylcd->hlcd->LCDChar(data_1[3] + 0x30);
       mylcd->hlcd->LCDChar(data_1[2] + 0x30);
@@ -157,10 +175,16 @@ void TaskShow(void *data)
     }
     else
     {
-      mylcd->hlcd->LCDGotoXY(40, 6);
+      mylcd->hlcd->LCDGotoXY(130, 0);
+
       mylcd->hlcd->LCDChar(set_temp[0] + 0x30);
       mylcd->hlcd->LCDChar(set_temp[1] + 0x30);
+      mylcd->hlcd->LCDChar(set_temp[2] + 0x30);
+      mylcd->hlcd->LCDChar(set_temp[3] + 0x30);
+      mylcd->hlcd->LCDChar(set_temp[4] + 0x30);
     }
+
+    //dds->AD9833_SetFrequencyOnly(out ? now_set : 0);
 
     osDelay(100);
   }
@@ -171,14 +195,20 @@ void TaskInput(void *argument)
   io = new Input();
   mylcd = new LCD();
   mylcd->initShow();
+  adc = new ADCs();
   dds = new AD9833();
   dds->AD9833_Init();
-  dds->AD9833_SetFrequencyQuick(1, AD9833_OUT_SINUS);
-  adc = new ADCs();
-  
+
+  for(;;)
+  {
+	  dds->AD9833_SetFrequencyQuick(1, AD9833_OUT_SINUS);
+  }
+
+
   osThreadNew(TaskShow, NULL, &task_input);
   for (;;)
   {
+	  dds->AD9833_SetFrequencyQuick(1, AD9833_OUT_SINUS);
     io->scan();
     osDelay(10);
   }
