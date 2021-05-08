@@ -155,6 +155,10 @@ void TaskShow(void *data)
       {
         now_set = set_;
         mylcd->hlcd->LCDString(setdone);
+        if(out)
+        {
+          dds->AD9833_SetFrequencyQuick(now_set, AD9833_OUT_SINUS);
+        }
       }
     }
 
@@ -195,7 +199,16 @@ void TaskInput(void *argument)
   mylcd->initShow();
   adc = new ADCs();
   dds = new AD9833();
-  dds->AD9833_SetFrequencyQuick(1, AD9833_OUT_SINUS);
+  dds->AD9833_Init();
+
+  // uint8_t data = 1;
+  // for (;;)
+  // {
+  //   dds->AD9833_SetFrequencyQuick(data++, AD9833_OUT_SINUS);
+  //   if (data == 11)
+  //     data = 0;
+  //   osDelay(1000);
+  // }
 
   osThreadNew(TaskShow, NULL, &task_input);
   for (;;)
