@@ -84,12 +84,14 @@ void TaskShow(void *data)
       if (!out)
       {
         out = true;
+        dds->AD9833_SetFrequencyQuick(now_set, AD9833_OUT_SINUS);
         mylcd->hlcd->LCDGotoXY(50, 3);
         mylcd->hlcd->LCDString(on);
       }
       else
       {
         out = false;
+        dds->AD9833_SetFrequencyQuick(0, AD9833_OUT_SINUS);
         mylcd->hlcd->LCDGotoXY(50, 3);
         mylcd->hlcd->LCDString(off);
       }
@@ -153,8 +155,6 @@ void TaskShow(void *data)
       {
         now_set = set_;
         mylcd->hlcd->LCDString(setdone);
-        if (out)
-          dds->AD9833_SetFrequencyQuick(now_set, AD9833_OUT_SINUS);
       }
     }
 
@@ -184,8 +184,6 @@ void TaskShow(void *data)
       mylcd->hlcd->LCDChar(set_temp[4] + 0x30);
     }
 
-    //dds->AD9833_SetFrequencyOnly(out ? now_set : 0);
-
     osDelay(100);
   }
 }
@@ -197,18 +195,11 @@ void TaskInput(void *argument)
   mylcd->initShow();
   adc = new ADCs();
   dds = new AD9833();
-  dds->AD9833_Init();
-
-  for(;;)
-  {
-	  dds->AD9833_SetFrequencyQuick(1, AD9833_OUT_SINUS);
-  }
-
+  dds->AD9833_SetFrequencyQuick(1, AD9833_OUT_SINUS);
 
   osThreadNew(TaskShow, NULL, &task_input);
   for (;;)
   {
-	  dds->AD9833_SetFrequencyQuick(1, AD9833_OUT_SINUS);
     io->scan();
     osDelay(10);
   }
