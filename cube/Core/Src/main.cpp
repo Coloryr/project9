@@ -83,6 +83,66 @@ void changeOut(bool isOut)
   }
 }
 
+void ShowA(uint32_t data)
+{
+  uint8_t data_1[9];
+  data_1[0] = data / 1 % 10;
+  data_1[1] = data / 10 % 10;
+  data_1[2] = data / 100 % 10;
+  data_1[3] = data / 1000 % 10;
+  data_1[4] = data / 10000 % 10;
+  data_1[5] = data / 100000 % 10;
+  data_1[6] = data / 1000000 % 10;
+  data_1[7] = data / 10000000 % 10;
+  data_1[8] = data / 100000000 % 10;
+  data_1[9] = data / 1000000000;
+
+  mylcd->hlcd->LCDGotoXY(80, 0);
+  mylcd->hlcd->LCDChar(data_1[9] + 0x30);
+  mylcd->hlcd->LCDChar(',');
+  mylcd->hlcd->LCDChar(data_1[8] + 0x30);
+  mylcd->hlcd->LCDChar(data_1[7] + 0x30);
+  mylcd->hlcd->LCDChar(data_1[6] + 0x30);
+  mylcd->hlcd->LCDChar(',');
+  mylcd->hlcd->LCDChar(data_1[5] + 0x30);
+  mylcd->hlcd->LCDChar(data_1[4] + 0x30);
+  mylcd->hlcd->LCDChar(data_1[3] + 0x30);
+  mylcd->hlcd->LCDChar(',');
+  mylcd->hlcd->LCDChar(data_1[2] + 0x30);
+  mylcd->hlcd->LCDChar(data_1[1] + 0x30);
+  mylcd->hlcd->LCDChar(data_1[0] + 0x30);
+}
+
+void ShowB(uint16_t temp1, uint16_t temp3)
+{
+  uint8_t data_1[5];
+  data_1[0] = temp1 / 1 % 10;
+  data_1[1] = temp1 / 10 % 10;
+  data_1[2] = temp1 / 100 % 10;
+  data_1[3] = temp1 / 1000 % 10;
+  data_1[4] = temp1 / 10000;
+
+  mylcd->hlcd->LCDGotoXY(0, 7);
+  mylcd->hlcd->LCDChar(data_1[4] + 0x30);
+  mylcd->hlcd->LCDChar(data_1[3] + 0x30);
+  mylcd->hlcd->LCDChar(data_1[2] + 0x30);
+  mylcd->hlcd->LCDChar(data_1[1] + 0x30);
+  mylcd->hlcd->LCDChar(data_1[0] + 0x30);
+
+  data_1[0] = temp3 / 1 % 10;
+  data_1[1] = temp3 / 10 % 10;
+  data_1[2] = temp3 / 100 % 10;
+  data_1[3] = temp3 / 1000 % 10;
+  data_1[4] = temp3 / 10000;
+
+  mylcd->hlcd->LCDGotoXY(40, 7);
+  mylcd->hlcd->LCDChar(data_1[4] + 0x30);
+  mylcd->hlcd->LCDChar(data_1[3] + 0x30);
+  mylcd->hlcd->LCDChar(data_1[2] + 0x30);
+  mylcd->hlcd->LCDChar(data_1[1] + 0x30);
+  mylcd->hlcd->LCDChar(data_1[0] + 0x30);
+}
+
 void TaskShow(void *data)
 {
   uint8_t data_1[10];
@@ -331,11 +391,56 @@ void TaskShow(void *data)
 
       changeOut(out);
     }
+    else if (temp == KEY_D)
+    {
+      changeOut(true);
+      uint32_t start = 100;
+      float max = 0;
+      float min1 = 0;
+      float min2 = 0;
+      uint32_t f_H;
+      for (;;)
+      {
+        dds->AD9833_SetFrequencyQuick(start, AD9833_OUT_SINUS);
+        ShowA(start);
+        osDelay(100);
+        adc->startADC1();
+        uint16_t temp1 = find(adc->adc1, 2048);
+        float Uo0 = ((float)temp1 / 4096 * 3.3) * 4;
+        uint16_t temp3 = Uo0 * 100;
+        if (Uo0 > max)
+        {
+          max = Uo0;
+        }
+        else if (Uo0 / max < 0.707)
+        {
+          f_H = start;
+        }
+        if (start < 1000)
+        {
+          start += 100;
+        }
+        else
+        {
+          start += 1000;
+        }
+        ShowB(temp1, temp3);
+      }
+    }
     else if (temp == KEY_N)
     {
       edit = true;
       set_pos = 0;
-      set_temp[0] = set_temp[1] = set_temp[2] = set_temp[3] = set_temp[4] = 0xF;
+      set_temp[0] =
+          set_temp[1] =
+              set_temp[2] =
+                  set_temp[3] =
+                      set_temp[4] =
+                          set_temp[5] =
+                              set_temp[6] =
+                                  set_temp[7] =
+                                      set_temp[8] =
+                                          set_temp[9] = 0xF;
       mylcd->hlcd->LCDGotoXY(70, 0);
       mylcd->hlcd->LCDChar('>');
     }
@@ -393,17 +498,17 @@ void TaskShow(void *data)
       edit = false;
       mylcd->hlcd->LCDGotoXY(70, 0);
       mylcd->hlcd->LCDChar(' ');
-      uint32_t set_ = 
-        set_temp[0] * 1000000000 +
-        set_temp[1] * 100000000 + 
-        set_temp[2] * 10000000 +  
-        set_temp[3] * 1000000 +  
-        set_temp[4] * 100000 +  
-        set_temp[5] * 10000 +
-        set_temp[6] * 1000 + 
-        set_temp[7] * 100 + 
-        set_temp[8] * 10 +
-        set_temp[9] * 1;
+      uint32_t set_ =
+          set_temp[0] * 1000000000 +
+          set_temp[1] * 100000000 +
+          set_temp[2] * 10000000 +
+          set_temp[3] * 1000000 +
+          set_temp[4] * 100000 +
+          set_temp[5] * 10000 +
+          set_temp[6] * 1000 +
+          set_temp[7] * 100 +
+          set_temp[8] * 10 +
+          set_temp[9] * 1;
       mylcd->hlcd->LCDGotoXY(0, 7);
       if (set_ > 10000000000)
       {
@@ -422,31 +527,7 @@ void TaskShow(void *data)
 
     if (!edit)
     {
-      data_1[0] = now_set / 1 % 10;
-      data_1[1] = now_set / 10 % 10;
-      data_1[2] = now_set / 100 % 10;
-      data_1[3] = now_set / 1000 % 10;
-      data_1[4] = now_set / 10000 % 10;
-      data_1[5] = now_set / 100000 % 10;
-      data_1[6] = now_set / 1000000 % 10;
-      data_1[7] = now_set / 10000000 % 10;
-      data_1[8] = now_set / 100000000 % 10;
-      data_1[9] = now_set / 1000000000;
-
-      mylcd->hlcd->LCDGotoXY(80, 0);
-      mylcd->hlcd->LCDChar(data_1[9] + 0x30);
-      mylcd->hlcd->LCDChar(',');
-      mylcd->hlcd->LCDChar(data_1[8] + 0x30);
-      mylcd->hlcd->LCDChar(data_1[7] + 0x30);
-      mylcd->hlcd->LCDChar(data_1[6] + 0x30);
-      mylcd->hlcd->LCDChar(',');
-      mylcd->hlcd->LCDChar(data_1[5] + 0x30);
-      mylcd->hlcd->LCDChar(data_1[4] + 0x30);
-      mylcd->hlcd->LCDChar(data_1[3] + 0x30);
-      mylcd->hlcd->LCDChar(',');
-      mylcd->hlcd->LCDChar(data_1[2] + 0x30);
-      mylcd->hlcd->LCDChar(data_1[1] + 0x30);
-      mylcd->hlcd->LCDChar(data_1[0] + 0x30);
+      ShowA(now_set);
     }
     else
     {
