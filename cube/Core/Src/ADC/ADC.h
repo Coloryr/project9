@@ -3,14 +3,15 @@
 
 #include "main.h"
 
+extern uint16_t AD1_DMA[2048];
+extern uint16_t AD3_DMA[2048];
+
 #define BUFF_SIZE 2048
 
 class ADCs
 {
 private:
 public:
-    uint16_t adc1[BUFF_SIZE];
-    uint16_t adc3[BUFF_SIZE];
     ADCs();
     void startADC1();
     void startADC3();

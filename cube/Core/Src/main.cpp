@@ -32,7 +32,8 @@ uint8_t setdone[] = "set done             ";
 uint8_t on[] = "on ";
 uint8_t off[] = "off";
 
-uint16_t AD_DMA[2048];
+uint16_t AD1_DMA[2048];
+uint16_t AD3_DMA[2048];
 
 int main(void)
 {
@@ -152,7 +153,7 @@ void ShowC(uint16_t temp1, uint16_t temp3)
   data_1[3] = temp1 / 1000 % 10;
   data_1[4] = temp1 / 10000;
 
-  mylcd->hlcd->LCDGotoXY(80, 7);
+  mylcd->hlcd->LCDGotoXY(100, 7);
   mylcd->hlcd->LCDChar(data_1[4] + 0x30);
   mylcd->hlcd->LCDChar(data_1[3] + 0x30);
   mylcd->hlcd->LCDChar(data_1[2] + 0x30);
@@ -174,6 +175,8 @@ void ShowC(uint16_t temp1, uint16_t temp3)
   mylcd->hlcd->LCDChar(data_1[0] + 0x30);
 }
 
+#define VDDA_APPLI ((uint32_t)3300)
+
 void TaskShow(void *data)
 {
   uint8_t data_1[10];
@@ -187,34 +190,34 @@ void TaskShow(void *data)
       osDelay(1000);
 
       adc->startADC1();
-      uint16_t temp1 = find(adc->adc1, 2048);
-      float Uo0 = ((float)temp1 / 4096 * 3.3) * 4;
-      uint16_t temp3 = Uo0 * 100;
+      uint16_t temp1 = find(AD1_DMA, 2048);
+      uint16_t temp2 = __LL_ADC_CALC_DATA_TO_VOLTAGE(VDDA_APPLI, temp1, LL_ADC_RESOLUTION_12B) + 100;
+      float Uo0 = temp2 / 100;
 
       RIN_MCU_H();
 
-      ShowB(temp1, temp3);
+      ShowB(temp1, temp2);
 
       osDelay(1000);
 
       adc->startADC1();
-      temp1 = find(adc->adc1, 2048);
-      float Uo1 = ((float)temp1 / 4096 * 3.3) * 4;
-      temp3 = Uo1 * 100;
+      temp1 = find(AD1_DMA, 2048);
+      temp2 = __LL_ADC_CALC_DATA_TO_VOLTAGE(VDDA_APPLI, temp1, LL_ADC_RESOLUTION_12B) + 100;
+      float Uo1 = temp2 / 100;
 
       changeOut(out);
       ALL_L();
 
-      ShowC(temp1, temp3);
+      ShowC(temp1, temp2);
 
       float Rin = Uo1 * 5.1 / (Uo0 - Uo1);
 
-      temp3 = Rin * 100;
-      data_1[0] = temp3 / 1 % 10;
-      data_1[1] = temp3 / 10 % 10;
-      data_1[2] = temp3 / 100 % 10;
-      data_1[3] = temp3 / 1000 % 10;
-      data_1[4] = temp3 / 10000;
+      temp2 = Rin * 100;
+      data_1[0] = temp2 / 1 % 10;
+      data_1[1] = temp2 / 10 % 10;
+      data_1[2] = temp2 / 100 % 10;
+      data_1[3] = temp2 / 1000 % 10;
+      data_1[4] = temp2 / 10000;
 
       mylcd->hlcd->LCDGotoXY(100, 1);
       mylcd->hlcd->LCDChar(data_1[4] + 0x30);
@@ -231,36 +234,37 @@ void TaskShow(void *data)
       osDelay(1000);
 
       adc->startADC1();
-      uint16_t temp1 = find(adc->adc1, 2048);
-      float Uo0 = ((float)temp1 / 4096 * 3.3) * 4;
-      uint16_t temp3 = Uo0 * 100;
+      uint16_t temp1 = find(AD1_DMA, 2048);
+      uint16_t temp2 = __LL_ADC_CALC_DATA_TO_VOLTAGE(VDDA_APPLI, temp1, LL_ADC_RESOLUTION_12B) + 100;
+      float Uo0 = (temp2 / 100) * 4;
+      adc->startADC1();
 
       OUT_C_H();
 
-      ShowB(temp1, temp3);
+      ShowB(temp1, temp2);
 
       osDelay(1000);
 
       adc->startADC1();
-      temp1 = find(adc->adc1, 2048);
-      float Uo2 = ((float)temp1 / 4096 * 3.3) * 4;
-      temp3 = Uo2 * 100;
+      temp1 = find(AD1_DMA, 2048);
+      temp2 = __LL_ADC_CALC_DATA_TO_VOLTAGE(VDDA_APPLI, temp1, LL_ADC_RESOLUTION_12B) + 100;
+      float Uo2 = (temp2 / 100) * 4;
 
       changeOut(out);
       ALL_L();
 
-      ShowC(temp1, temp3);
+      ShowC(temp1, temp2);
 
       ALL_L();
 
       float Rout = 2 * (Uo0 - Uo2 - 1);
 
-      temp3 = Rout * 100;
-      data_1[0] = temp3 / 1 % 10;
-      data_1[1] = temp3 / 10 % 10;
-      data_1[2] = temp3 / 100 % 10;
-      data_1[3] = temp3 / 1000 % 10;
-      data_1[4] = temp3 / 10000;
+      temp2 = Rout * 100;
+      data_1[0] = temp2 / 1 % 10;
+      data_1[1] = temp2 / 10 % 10;
+      data_1[2] = temp2 / 100 % 10;
+      data_1[3] = temp2 / 1000 % 10;
+      data_1[4] = temp2 / 10000;
 
       mylcd->hlcd->LCDGotoXY(100, 2);
       mylcd->hlcd->LCDChar(data_1[4] + 0x30);
@@ -277,21 +281,21 @@ void TaskShow(void *data)
       osDelay(1000);
 
       adc->startADC1();
-      uint16_t temp1 = find(adc->adc1, 2048);
-      float Uo0 = ((float)temp1 / 4096 * 3.3) * 4;
-      uint16_t temp3 = Uo0 * 100;
+      uint16_t temp1 = find(AD1_DMA, 2048);
+      uint16_t temp2 = __LL_ADC_CALC_DATA_TO_VOLTAGE(VDDA_APPLI, temp1, LL_ADC_RESOLUTION_12B) + 100;
+      float Uo0 = (temp2 / 100) * 4;
 
-      ShowB(temp1, temp3);
+      ShowB(temp1, temp2);
       ShowC(0, 0);
 
       float Au = Uo0 / 0.02;
 
-      temp3 = Au * 100;
-      data_1[0] = temp3 / 1 % 10;
-      data_1[1] = temp3 / 10 % 10;
-      data_1[2] = temp3 / 100 % 10;
-      data_1[3] = temp3 / 1000 % 10;
-      data_1[4] = temp3 / 10000;
+      temp2 = Au * 100;
+      data_1[0] = temp2 / 1 % 10;
+      data_1[1] = temp2 / 10 % 10;
+      data_1[2] = temp2 / 100 % 10;
+      data_1[3] = temp2 / 1000 % 10;
+      data_1[4] = temp2 / 10000;
 
       mylcd->hlcd->LCDGotoXY(40, 5);
       mylcd->hlcd->LCDChar(data_1[4] + 0x30);
@@ -319,16 +323,16 @@ void TaskShow(void *data)
         ShowA(start);
         osDelay(100);
         temp = io->get();
-        if(temp == KEY_D)
+        if (temp == KEY_D)
         {
-        	dds->AD9833_SetFrequencyQuick(now_set, AD9833_OUT_SINUS);
-        	changeOut(out);
-        	break;
+          dds->AD9833_SetFrequencyQuick(now_set, AD9833_OUT_SINUS);
+          changeOut(out);
+          break;
         }
         adc->startADC1();
-        uint16_t temp1 = find(adc->adc1, 2048);
-        float Uo0 = ((float)temp1 / 4096 * 3.3) * 4;
-        uint16_t temp3 = Uo0 * 100;
+        uint16_t temp1 = find(AD1_DMA, 2048);
+        uint16_t temp2 = __LL_ADC_CALC_DATA_TO_VOLTAGE(VDDA_APPLI, temp1, LL_ADC_RESOLUTION_12B) + 100;
+        float Uo0 = temp2 / 100;
         if (step == 0)
         {
           if (Uo0 > max)
@@ -370,12 +374,22 @@ void TaskShow(void *data)
             start += 1000;
           }
         }
-        ShowB(temp1, temp3);
+        ShowB(temp1, temp2);
       }
-      mylcd->hlcd->LCDGotoXY(40, 3);
-      ShowA(f_L);
-      mylcd->hlcd->LCDGotoXY(40, 4);
-      ShowA(f_H);
+      if (step == 2)
+      {
+        mylcd->hlcd->LCDGotoXY(40, 3);
+        ShowA(f_L);
+        mylcd->hlcd->LCDGotoXY(40, 4);
+        ShowA(f_H);
+      }
+      else
+      {
+        mylcd->hlcd->LCDGotoXY(40, 3);
+        ShowA(0);
+        mylcd->hlcd->LCDGotoXY(40, 4);
+        ShowA(0);
+      }
     }
     else if (temp == KEY_N)
     {
@@ -440,6 +454,17 @@ void TaskShow(void *data)
       else if (temp == KEY_0)
       {
         set_temp[set_pos++] = 0;
+      }
+    }
+    else if (!edit)
+    {
+      if (temp == KEY_0)
+      {
+        adc->startADC1();
+        uint16_t temp1 = find(AD1_DMA, 2048);
+        uint16_t temp2 = __LL_ADC_CALC_DATA_TO_VOLTAGE(VDDA_APPLI, temp1, LL_ADC_RESOLUTION_12B) + 100;
+
+        ShowB(temp1, temp2);
       }
     }
 
