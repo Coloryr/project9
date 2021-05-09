@@ -27,8 +27,8 @@ bool edit = false;
 bool out = false;
 uint8_t set_temp[10] = {0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F};
 uint8_t set_pos = 0;
-uint8_t setfail[] = "set fail             ";
-uint8_t setdone[] = "set done             ";
+uint8_t setfail[] = "set fail                  ";
+uint8_t setdone[] = "set done                  ";
 uint8_t on[] = "on ";
 uint8_t off[] = "off";
 
@@ -300,7 +300,6 @@ void TaskShow(void *data)
       mylcd->hlcd->LCDGotoXY(40, 5);
       mylcd->hlcd->LCDChar(data_1[4] + 0x30);
       mylcd->hlcd->LCDChar(data_1[3] + 0x30);
-      mylcd->hlcd->LCDChar('.');
       mylcd->hlcd->LCDChar(data_1[2] + 0x30);
       mylcd->hlcd->LCDChar(data_1[1] + 0x30);
       mylcd->hlcd->LCDChar(data_1[0] + 0x30);
