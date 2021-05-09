@@ -40,8 +40,8 @@ private:
 
 public:
     AD9833();
-    void AD9833_SetFrequency(uint16_t reg, float fout);
-    void AD9833_SetFrequencyQuick(float fout, uint16_t type);
+    void AD9833_SetFrequency(uint16_t reg, uint32_t fout);
+    void AD9833_SetFrequencyQuick(uint32_t fout, uint16_t type);
     void AD9833_Init();
     void AD9833_Setup(uint16_t freq, uint16_t phase, uint16_t type);
 };

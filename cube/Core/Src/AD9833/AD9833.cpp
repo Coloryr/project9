@@ -26,7 +26,7 @@ void AD9833::AD9833_SetRegisterValue(uint16_t regValue)
     FSYNC_SetHigh
 }
 
-void AD9833::AD9833_SetFrequency(uint16_t reg, float fout)
+void AD9833::AD9833_SetFrequency(uint16_t reg, uint32_t fout)
 {
     uint16_t freqHi = reg;
     uint16_t freqLo = reg;
@@ -38,9 +38,9 @@ void AD9833::AD9833_SetFrequency(uint16_t reg, float fout)
     AD9833_SetRegisterValue(freqHi);
 }
 
-void AD9833::AD9833_SetFrequencyQuick(float fout, uint16_t type)
+void AD9833::AD9833_SetFrequencyQuick(uint32_t fout, uint16_t type)
 {
-    AD9833_SetFrequency(AD9833_REG_FREQ0, fout * 1000); // 400 kHz
+    AD9833_SetFrequency(AD9833_REG_FREQ0, fout);
     AD9833_Setup(AD9833_FSEL0, AD9833_PSEL0, type);
 }
 void AD9833::AD9833_Init()
