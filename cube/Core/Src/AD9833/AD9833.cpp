@@ -19,28 +19,47 @@ void AD9833::AD9833_SetRegisterValue(uint16_t regValue)
     data[1] = (uint8_t)((regValue & 0x00FF) >> 0);
     FSYNC_SetLOW
 
-    LL_SPI_TransmitData8(SPI2, data[0]);
+        LL_SPI_TransmitData8(SPI2, data[0]);
     LL_mDelay(1);
     LL_SPI_TransmitData8(SPI2, data[1]);
     LL_mDelay(1);
     FSYNC_SetHigh
 }
 
-void AD9833::AD9833_SetFrequency(uint16_t reg, uint32_t fout)
+bool b;
+
+void AD9833::AD9833_SetFrequency(uint16_t reg, uint32_t fout, bool a)
 {
-    uint16_t freqHi = reg;
-    uint16_t freqLo = reg;
-    uint32_t val = RealFreDat * fout; //F寄存器的值
-    freqHi |= (val & 0xFFFC000) >> 14;
-    freqLo |= (val & 0x3FFF);
-    AD9833_SetRegisterValue(AD9833_B28);
-    AD9833_SetRegisterValue(freqLo);
-    AD9833_SetRegisterValue(freqHi);
+    __disable_irq();
+    if (!a)
+    {
+        uint16_t freqHi = reg;
+        uint16_t freqLo = reg;
+        uint32_t val = RealFreDat * fout; //F寄存器的值
+        freqHi |= (val & 0xFFFC000) >> 14;
+        freqLo |= (val & 0x3FFF);
+        AD9833_SetRegisterValue(AD9833_B28);
+        AD9833_SetRegisterValue(freqLo);
+        AD9833_SetRegisterValue(freqHi);
+    }
+    else
+    {
+        uint16_t freqHi = b ? AD9833_REG_FREQ0 : AD9833_REG_FREQ1;
+        uint16_t freqLo = b ? AD9833_REG_FREQ0 : AD9833_REG_FREQ1;
+        uint32_t val = RealFreDat * fout; //F寄存器的值
+        freqHi |= (val & 0xFFFC000) >> 14;
+        freqLo |= (val & 0x3FFF);
+        AD9833_SetRegisterValue(AD9833_B28);
+        AD9833_SetRegisterValue(freqLo);
+        AD9833_SetRegisterValue(freqHi);
+        b = !b;
+    }
+    __enable_irq();
 }
 
-void AD9833::AD9833_SetFrequencyQuick(uint32_t fout, uint16_t type)
+void AD9833::AD9833_SetFrequencyQuick(uint32_t fout, uint16_t type, bool a)
 {
-    AD9833_SetFrequency(AD9833_REG_FREQ0, fout);
+    AD9833_SetFrequency(AD9833_REG_FREQ0, fout, a);
     AD9833_Setup(AD9833_FSEL0, AD9833_PSEL0, type);
 }
 void AD9833::AD9833_Init()

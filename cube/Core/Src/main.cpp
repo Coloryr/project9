@@ -177,6 +177,91 @@ void ShowC(uint16_t temp1, uint16_t temp3)
 
 #define VDDA_APPLI ((uint32_t)3300)
 
+uint16_t adj(uint16_t a, uint32_t frq)
+{
+  if (frq <= 300)
+  {
+    a += 280;
+  }
+  else if (frq <= 1000)
+  {
+    a += 380;
+  }
+  else if (frq <= 10000)
+  {
+    a += 320;
+  }
+  else if (frq <= 50000)
+  {
+    a += 390;
+  }
+  else if (frq <= 60000)
+  {
+    a += 510;
+  }
+  else if (frq <= 70000)
+  {
+    a += 390;
+  }
+  else if (frq <= 80000)
+  {
+    a += 360;
+  }
+  else if (frq <= 90000)
+  {
+    a += 390;
+  }
+  else if (frq <= 100000)
+  {
+    a += 420;
+  }
+  else if (frq <= 110000)
+  {
+    a += 400;
+  }
+  else if (frq <= 120000)
+  {
+    a += 400;
+  }
+  else if (frq <= 130000)
+  {
+    a += 420;
+  }
+  else if (frq <= 140000)
+  {
+    a += 450;
+  }
+  else if (frq <= 150000)
+  {
+    a += 430;
+  }
+  else if (frq <= 150000)
+  {
+    a += 430;
+  }
+  else if (frq <= 160000)
+  {
+    a += 460;
+  }
+  else if (frq <= 170000)
+  {
+    a += 410;
+  }
+  else if (frq <= 180000)
+  {
+    a += 460;
+  }
+  else if (frq <= 200000)
+  {
+    a += 420;
+  }
+  else
+  {
+    a += 400;
+  }
+  return a;
+}
+
 void TaskShow(void *data)
 {
   uint8_t data_1[10];
@@ -191,7 +276,8 @@ void TaskShow(void *data)
 
       adc->startADC1();
       uint16_t temp1 = find(AD1_DMA, 2048);
-      uint16_t temp2 = __LL_ADC_CALC_DATA_TO_VOLTAGE(VDDA_APPLI, temp1, LL_ADC_RESOLUTION_12B) + 400;
+      uint16_t temp2 = __LL_ADC_CALC_DATA_TO_VOLTAGE(VDDA_APPLI, temp1, LL_ADC_RESOLUTION_12B);
+      temp2 = adj(temp2, now_set);
       float Uo0 = (float)temp2 / 1000;
 
       RIN_MCU_H();
@@ -202,7 +288,8 @@ void TaskShow(void *data)
 
       adc->startADC1();
       temp1 = find(AD1_DMA, 2048);
-      temp2 = __LL_ADC_CALC_DATA_TO_VOLTAGE(VDDA_APPLI, temp1, LL_ADC_RESOLUTION_12B) + 400;
+      temp2 = __LL_ADC_CALC_DATA_TO_VOLTAGE(VDDA_APPLI, temp1, LL_ADC_RESOLUTION_12B);
+      temp2 = adj(temp2, now_set);
       float Uo1 = (float)temp2 / 1000;
 
       changeOut(out);
@@ -235,7 +322,8 @@ void TaskShow(void *data)
 
       adc->startADC1();
       uint16_t temp1 = find(AD1_DMA, 2048);
-      uint16_t temp2 = __LL_ADC_CALC_DATA_TO_VOLTAGE(VDDA_APPLI, temp1, LL_ADC_RESOLUTION_12B) + 400;
+      uint16_t temp2 = __LL_ADC_CALC_DATA_TO_VOLTAGE(VDDA_APPLI, temp1, LL_ADC_RESOLUTION_12B);
+      temp2 = adj(temp2, now_set);
       float Uo0 = ((float)temp2 / 1000);
 
       OUT_C_H();
@@ -246,7 +334,8 @@ void TaskShow(void *data)
 
       adc->startADC1();
       temp1 = find(AD1_DMA, 2048);
-      temp2 = __LL_ADC_CALC_DATA_TO_VOLTAGE(VDDA_APPLI, temp1, LL_ADC_RESOLUTION_12B) + 400;
+      temp2 = __LL_ADC_CALC_DATA_TO_VOLTAGE(VDDA_APPLI, temp1, LL_ADC_RESOLUTION_12B);
+      temp2 = adj(temp2, now_set);
       float Uo2 = ((float)temp2 / 1000);
 
       ShowC(temp1, temp2);
@@ -280,7 +369,8 @@ void TaskShow(void *data)
 
       adc->startADC1();
       uint16_t temp1 = find(AD1_DMA, 2048);
-      uint16_t temp2 = __LL_ADC_CALC_DATA_TO_VOLTAGE(VDDA_APPLI, temp1, LL_ADC_RESOLUTION_12B) + 400;
+      uint16_t temp2 = __LL_ADC_CALC_DATA_TO_VOLTAGE(VDDA_APPLI, temp1, LL_ADC_RESOLUTION_12B);
+      temp2 = adj(temp2, now_set);
       float Uo0 = ((float)temp2 / 1000);
 
       ShowB(temp1, temp2);
@@ -306,16 +396,21 @@ void TaskShow(void *data)
     }
     else if (temp == KEY_D)
     {
-      changeOut(true);
+      changeOut(false);
       ALL_L();
+      dds->AD9833_SetFrequencyQuick(0, AD9833_OUT_SINUS);
+      osDelay(500);
       uint32_t start = 10;
       float max = 0;
       uint32_t f_H;
       uint32_t f_L;
       uint8_t step = 0;
+      mylcd->hlcd->LCDGotoXY(168, 5);
+      mylcd->hlcd->LCDString(on);
+      bool check = false;
       for (;;)
       {
-        dds->AD9833_SetFrequencyQuick(start, AD9833_OUT_SINUS);
+        dds->AD9833_SetFrequencyQuick(start, AD9833_OUT_SINUS, true);
         mylcd->hlcd->LCDGotoXY(80, 0);
         ShowA(start);
         osDelay(200);
@@ -328,14 +423,53 @@ void TaskShow(void *data)
         }
         adc->startADC1();
         uint16_t temp1 = find(AD1_DMA, 2048);
-        uint16_t temp2 = __LL_ADC_CALC_DATA_TO_VOLTAGE(VDDA_APPLI, temp1, LL_ADC_RESOLUTION_12B) + 400;
+        uint16_t temp2 = __LL_ADC_CALC_DATA_TO_VOLTAGE(VDDA_APPLI, temp1, LL_ADC_RESOLUTION_12B);
+        temp2 = adj(temp2, start);
+        if (start < 2000)
+        {
+          temp2 += 300;
+        }
+        else if (start < 40000)
+        {
+          temp2 += 500;
+        }
+        else if (start < 60000)
+        {
+          temp2 += 600;
+        }
+        else if (start < 80000)
+        {
+          temp2 += 700;
+        }
+        else
+        {
+          temp2 += 800;
+        }
         float Uo0 = (float)temp2 / 1000;
         if (step == 0)
         {
           if (Uo0 > max)
           {
             max = Uo0;
+            ShowC(temp1, temp2);
           }
+          else
+          {
+            if (Uo0 < max * 0.707)
+            {
+              if (!check)
+              {
+                check = true;
+                continue;
+              }
+              f_H = start;
+              step = 1;
+              start = 10;
+              ShowB(temp1, temp2);
+              osDelay(5000);
+            }
+          }
+          check = false;
           if (start < 300)
           {
             start += 10;
@@ -351,15 +485,6 @@ void TaskShow(void *data)
           else
           {
             start += 1000;
-          }
-          if (max != Uo0)
-          {
-            if (Uo0 < max * 0.707)
-            {
-              f_H = start;
-              step = 1;
-              start = 10;
-            }
           }
         }
         else if (step == 1)
@@ -379,6 +504,7 @@ void TaskShow(void *data)
             start += 100;
           }
         }
+
         ShowB(temp1, temp2);
       }
       if (step == 2)
