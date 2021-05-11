@@ -17,7 +17,7 @@ void AD9833::AD9833_SetRegisterValue(uint16_t regValue)
 
     data[0] = (uint8_t)((regValue & 0xFF00) >> 8);
     data[1] = (uint8_t)((regValue & 0x00FF) >> 0);
-    FSYNC_SetLOW 
+    FSYNC_SetLOW
 
     LL_SPI_TransmitData8(SPI2, data[0]);
     LL_mDelay(1);

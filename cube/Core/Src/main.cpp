@@ -308,7 +308,7 @@ void TaskShow(void *data)
     {
       changeOut(true);
       ALL_L();
-      uint32_t start = 100;
+      uint32_t start = 10;
       float max = 0;
       uint32_t f_H;
       uint32_t f_L;
@@ -318,7 +318,7 @@ void TaskShow(void *data)
         dds->AD9833_SetFrequencyQuick(start, AD9833_OUT_SINUS);
         mylcd->hlcd->LCDGotoXY(80, 0);
         ShowA(start);
-        osDelay(100);
+        osDelay(200);
         temp = io->get();
         if (temp == KEY_D)
         {
@@ -336,7 +336,11 @@ void TaskShow(void *data)
           {
             max = Uo0;
           }
-          if (start < 1000)
+          if (start < 300)
+          {
+            start += 10;
+          }
+          else if (start >= 300 && start < 1000)
           {
             start += 100;
           }
@@ -354,7 +358,7 @@ void TaskShow(void *data)
             {
               f_H = start;
               step = 1;
-              start = 100;
+              start = 10;
             }
           }
         }
@@ -366,13 +370,13 @@ void TaskShow(void *data)
             step = 2;
             break;
           }
-          if (start < 1000)
+          if (start < 300)
           {
-            start += 100;
+            start += 10;
           }
           else
           {
-            start += 1000;
+            start += 100;
           }
         }
         ShowB(temp1, temp2);
@@ -541,12 +545,12 @@ void TaskInput(void *argument)
 
   ALL_L();
 
-//   uint8_t data = 1;
-//   for (;;)
-//   {
-//     dds->AD9833_SetFrequencyQuick((1000 * data++), AD9833_OUT_SINUS);
-//     LL_mDelay(500);
-//   }
+  //   uint8_t data = 1;
+  //   for (;;)
+  //   {
+  //     dds->AD9833_SetFrequencyQuick((1000 * data++), AD9833_OUT_SINUS);
+  //     LL_mDelay(500);
+  //   }
 
   osThreadNew(TaskShow, NULL, &task_input);
   for (;;)
